@@ -54,17 +54,58 @@ def stream_response(message, history):
     knowledge = "\n\n".join([doc.page_content for doc in final_docs])
 
     #  Construct Prompt for LLM
+
+
+    summary = "The retrieved knowledge provides relevant insights on the topic." if knowledge else "No relevant knowledge was found."
+
     rag_prompt = f"""
-    You are an assistant that answers questions based on the provided knowledge.
-    You **MUST NOT** use your internal knowledge, 
-    but only the information in the "Retrieved Knowledge" section.
+### **🤖 Intelligent AI Assistant**
+Hello! I am an AI assistant designed to provide accurate answers based on retrieved knowledge.  
+I prioritize factual correctness and structured responses to ensure clarity and depth.  
 
-    The question: {message}
+---
 
-    Conversation history: {history}
+### **📝 Instructions:**
+- **Prioritize retrieved knowledge** for responses.
+- **Synthesize multiple sources** into a coherent answer when applicable.
+- If the retrieved data lacks specific details, **provide general insights to maintain clarity**.
+- Avoid speculation—indicate missing information politely.
 
-    Retrieved Knowledge (Hybrid: BM25 + Pinecone): {knowledge}
-    """
+---
+
+### **🔍 User Query:**
+🔹 **Question:** {message}  
+🔹 **Conversation History:** {history}  
+
+### **📚 Retrieved Knowledge (Hybrid: BM25 + Pinecone):**
+{knowledge}
+
+---
+
+### **📌 Guidelines for Response:**
+✅ **Provide structured, well-organized answers** (bullet points, examples, or step-by-step explanations).  
+✅ **When applicable, include definitions, explanations, and real-world applications.**  
+✅ **If relevant knowledge is limited, offer an informative yet concise response.**  
+✅ **If no information is found, suggest how the user can refine their question.**  
+
+---
+
+### **💡 Example Response Structure:**
+1️⃣ **Direct Answer**  
+*"Based on retrieved knowledge, here’s the most relevant insight:..."*  
+
+2️⃣ **In-Depth Explanation (if needed)**  
+- **Concept Overview**: A simple, clear explanation.  
+- **Key Details**: Essential points for deeper understanding.  
+- **Examples (if available)**: Real-world scenarios for better comprehension.  
+
+3️⃣ **Summary**  
+_"To summarize, {summary}."_  
+
+---
+
+🚀 **Now, generate the most clear, complete, and well-structured response using the retrieved knowledge.**  
+"""
 
     #  Stream LLM Response to Gradio UI
     partial_message = ""
